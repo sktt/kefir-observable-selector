@@ -28,22 +28,25 @@ const matches = selector => el => el.matches && el.matches(selector)
 
 const pluck = key => arr => arr.map(el => el[key])
 
-const filterReducer = filterFunc => (acc, n) => {
-  if(filterFunc(n)) {
-    return acc.concat(n)
-  }
-  return acc
-}
+const noop = x => x
 
-const nodesMatching = selector => nodeArrs => nodeArrs.reduce(filterReducer(
-  nodes => Array.prototype.concat.apply([], nodes).filter(matches(selector))
-), [])
+const concat = (acc, n) => acc.concat(n)
 
-const includeNested = selector => matches => {
-  const m = matches.reduce(
-    (acc, node) => acc.concat.apply([], node.querySelectorAll(selector)), []
-  )
-  return matches.concat(m)
+const nodesMatching = selector => nodes => nodes.filter(matches(selector))
+
+const toArray = collection => Array.prototype.concat.apply([], collection)
+
+const flattenArrays = nodeArrs => nodeArrs.map(toArray).reduce(concat, [])
+
+const includeNested = selector => nodes => {
+  const m = nodes.filter(
+    // only include nodes
+    node => node.nodeType === 1
+  ).map(
+    node => toArray(node.querySelectorAll(selector))
+  ).reduce(concat, [])
+
+  return nodes.concat(m)
 }
 
 const obsAdded = (root, selector, subtree) => {
@@ -52,12 +55,13 @@ const obsAdded = (root, selector, subtree) => {
     subtree
   })
   .map(pluck('addedNodes'))
+  .map(flattenArrays)
+  .map(subtree ? includeNested(selector) : noop)
   .map(nodesMatching(selector))
   .merge(constant(Array.prototype.concat.apply([],
     document.querySelectorAll(selector)
   )))
   .filter(populated)
-  .map(subtree ? includeNested(selector) : (nodes) => nodes)
 }
 
 const obsRemoved = (root, selector, subtree) => {
@@ -66,9 +70,10 @@ const obsRemoved = (root, selector, subtree) => {
     subtree
   })
   .map(pluck('removedNodes'))
+  .map(flattenArrays)
+  .map(subtree ? includeNested(selector) : noop)
   .map(nodesMatching(selector))
   .filter(populated)
-  .map(subtree ? includeNested(selector) : (nodes) => nodes)
 }
 
 const obsAttributes = (root, attributeFilter) => {
@@ -77,9 +82,8 @@ const obsAttributes = (root, attributeFilter) => {
     attributeFilter
   })
   .map(pluck('target'))
-  .map(nodes => nodes.reduce(
-    filterReducer(n => n === root), []
-  ))
+  .map(nodes => nodes.filter(n => n === root))
+  .map(nodes => nodes.reduce(concat, []))
   // only looking at one node
   .map(el => el[0])
 }
