@@ -49,7 +49,7 @@ const includeNested = selector => nodes => {
   return nodes.concat(m)
 }
 
-const obsAdded = (root, selector, subtree) => {
+export const obsAdded = (root, selector, subtree) => {
   return mutationRecorder(root, {
     childList: true,
     subtree
@@ -64,7 +64,7 @@ const obsAdded = (root, selector, subtree) => {
   .filter(populated)
 }
 
-const obsRemoved = (root, selector, subtree) => {
+export const obsRemoved = (root, selector, subtree) => {
   return mutationRecorder(root, {
     childList: true,
     subtree
@@ -76,7 +76,7 @@ const obsRemoved = (root, selector, subtree) => {
   .filter(populated)
 }
 
-const obsAttributes = (root, attributeFilter) => {
+export const obsAttributes = (root, attributeFilter) => {
   return mutationRecorder(root, {
     attributes: true,
     attributeFilter
@@ -86,8 +86,4 @@ const obsAttributes = (root, attributeFilter) => {
   .map(nodes => nodes.reduce(concat, []))
   // only looking at one node
   .map(el => el[0])
-}
-
-export default {
-  obsAdded, obsRemoved, obsAttributes, domReady
 }
