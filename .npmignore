@@ -1,1 +1,4 @@
 node_modules
+preprocess_tests.js
+rollup.config.js
+test
