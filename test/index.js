@@ -1,5 +1,5 @@
 require.requireActual('mutationobserver-shim')
-const {default: {obsAdded, obsRemoved, obsAttributes}} = require.requireActual('../index')
+const {obsAdded, obsRemoved, obsAttributes} = require.requireActual('../index')
 
 function* addTestNode() {
   let i = 0

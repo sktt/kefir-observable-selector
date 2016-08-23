@@ -1,24 +1,26 @@
 import {fromEvents, constant, stream} from 'kefir'
 
 const domReady = constant(document.readyState)
-  .filter(state => state === 'complete')
+  .filter(state => state !== 'loading')
   .merge(fromEvents(document, 'DOMContentLoaded').map(_ => document.readyState))
   .take(1)
   .toProperty()
 
-const mutationRecorder = (root, options) => domReady.flatMap(
-  _ => stream(
-    emitter => {
-      const obs = new MutationObserver(emitter.emit)
+export const mutationRecorder = (root, options) => {
+  return domReady.flatMap(
+    _ => stream(
+      emitter => {
+        const obs = new MutationObserver(emitter.emit)
 
-      //NOTE: At the very least, childList, attributes, or characterData
-      //must be set to true. Otherwise, "An invalid or illegal string was
-      //specified" error is thrown.
-      obs.observe(root, options)
-      return () => obs.disconnect()
-    }
+        //At the very least, childList, attributes, or characterData
+        //must be set to true. Otherwise, "An invalid or illegal string was
+        //specified" error is thrown.
+        obs.observe(root, options)
+        return () => obs.disconnect()
+      }
+    )
   )
-)
+}
 
 const exists = e => e != null
 

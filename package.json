@@ -1,13 +1,15 @@
 {
   "name": "kefir-observable-selector",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Subcribable DOM query selectors",
   "main": "dist/index.js",
   "jsnext:main": "index.js",
   "scripts": {
     "build": "rollup -c -i index.js",
+    "watch": "nodemon -w index.js --exec npm run build",
     "test": "jest"
   },
+  "repository": "https://github.com/sktt/kefir-observable-selector",
   "jest": {
     "testDirectoryName": "test",
     "scriptPreprocessor": "<rootDir>/preprocess_tests",

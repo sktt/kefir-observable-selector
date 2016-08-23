@@ -6,12 +6,16 @@ const PROD = process.env.NODE_ENV === 'production'
 const MINIFY = PROD
 
 export default {
+  entry: './index.js',
   format: 'umd',
-  moduleName: 'kefirSelector',
+  moduleName: 'KefirObservableSelector',
   globals: {
     'kefir': 'Kefir'
   },
-  plugins: [babel(), nodeResolve({
+  plugins: [babel({
+    exclude: 'node_modules/**',
+    runtimeHelpers: true
+  }), nodeResolve({
     jsnext: true,
     main: true,
     skip: ['kefir']
