@@ -1,6 +1,6 @@
 {
   "name": "kefir-observable-selector",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Subcribable DOM query selectors",
   "main": "dist/index.js",
   "jsnext:main": "index.js",
